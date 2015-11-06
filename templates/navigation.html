@@ -1,0 +1,24 @@
+<div id='cssmenu'>	
+	{% if request.user.is_authenticated %}
+		<ul>
+			<li><a href="/"><span>My Twitter</span></a></li>				
+			<li ui-sref-active="active"><a ui-sref="tweets"><span>Home</span></a></li>			
+			<li ui-sref-active="active"><a ui-sref="following"><span>Following</span></a></li>				
+		</ul>	
+		<ul class="pull-right">	
+			<li class="profile"><span>{{ request.user.first_name|title }}</span></li>				
+			<li><a href="/logout"><span>Logout</span></a></li>
+		</ul>
+  	{% else %}
+		<ul>
+			<li><a href="/"><span>My Twitter</span></a></li>	
+		</ul>
+		<ul class="pull-right">			
+			<li><a href="/login"><span>Sign In</span></a></li>
+			<li><a href="/register"><span>Sign Up</span></a></li>
+		</ul>
+  	{% endif %}
+</div>	
+
+
+

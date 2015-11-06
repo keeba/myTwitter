@@ -1,0 +1,38 @@
+{% load staticfiles %}
+<html {% if request.user.is_authenticated or is_home_tab %}data-ng-app="tweetApp"{% endif %}>
+  <head>
+ 	<link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+	<link href="{% static "css/menu.css" %}" rel="stylesheet">	
+	<link href="{% static "css/tweet.css" %}" rel="stylesheet">
+	<title>My Twitter</title>
+  </head>
+  <body>
+	  {% include "navigation.html" %}
+	  {% if request.user.is_authenticated or is_home_tab %}
+		   <div ui-view></div>
+	  {% else %}
+	  <div class="container-fluid" id="main">
+		  {% block main %}{% endblock %}
+	  </div>
+	  {% endif %}
+	  <script src="{% static "js/jquery.min.js" %}"></script>
+	  <script src="{% static "js/bootstrap.min.js" %}"></script>
+		<script src="{% static "js/angular.min.js" %}"></script>
+		<script src="{% static "js/angular-resource.min.js" %}"></script>
+		<script src="{% static "js/angular-route.min.js" %}"></script>
+		<script src="{% static "js/angular-ui-router.min.js" %}"></script>
+		<script src="{% static "js/tweets/tweetServices.js" %}"></script>	 	  
+		<script src="{% static "js/tweets/tweetController.js" %}"></script>	 	  	  
+		<script src="{% static "js/tweets/tweetApp.js" %}"></script>	 
+	  	<script type="text/javascript">
+	    // This allows you to access the current user id in your angular controllers.
+			var authUser = function() {
+				  return {
+					id: "{{ request.user.id|default:''}}",
+					is_superuser : "{{ request.user.is_superuser|default:'' }}"  
+	        	  }
+			};
+			angular.module('tweetApp.services').factory('AuthUser',authUser); 
+		</script>
+  </body>
+</html>

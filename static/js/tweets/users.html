@@ -1,0 +1,16 @@
+<div class="col-sm-6" style="padding:40px 100px;">
+
+	<form class="form-inline" style="margin-bottom:15px;">
+		<label>Filter By: </label>
+		<input type="text" ng-model="search" class="form-control"> 
+	</form>
+	<table class="table table-striped table-bordered">
+		<tr ng-repeat="user in users| filter: { id: '!' + authuser.id } | filter:search ">
+			<td>[[ user.first_name ]] [[ user.last_name ]]</td>
+			<td width="30%">
+				<button class="btn btn-primary" ng-if="!user.is_followee" ng-click="saveFollowee(user.id)">Follow</button>
+				<button class="btn btn-warning" ng-if="user.is_followee" ng-click="deleteFollowee(user.is_followee)"> UnFollow </button>				
+			</td>
+		</tr>
+	</table>
+</div>

@@ -1,0 +1,12 @@
+<div class="new-tweet-container" ng-if="authuser.id">
+  <textarea placeholder="Whats happening?" class="new-tweet-input" id="new-tweet" data-ng-model="text" maxlength="255" rows="3"></textarea>
+  <button class="btn-tweet" id="tweet" ng-click="saveTweet(text);text=null">Tweet</button>
+</div>
+
+<div class="tweets" id="tweets-target">
+  <div class="tweet-container" ng-repeat="tweet in tweets">
+    <div class="tweet-body"> [[ tweet.text ]]</div>
+    <div class="tweet-name"> [[ tweet.user ]]</div>
+    <div class="tweet-time"> [[ tweet.timestamp | date:'medium' ]]</div>
+  </div>
+</div>
