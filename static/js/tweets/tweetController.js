@@ -4,20 +4,45 @@ tweetControllers.controller('TweetCtrl',['$scope','Tweet','AuthUser','$interval'
 	  function TweetCtrl($scope,Tweet,AuthUser,$interval) {
 	  $scope.tweets = [];	
 	  $scope.authuser = AuthUser;
-	  function gettweets(){
-		  Tweet.query(function(response) {
-		  	$scope.tweets = response;
+	  $scope.reload = 0;	  
+	  Tweet.query({reload:1},function(response) {
+	  	$scope.tweets = response;
+	  });
+	  function getnewtweets(){
+		  Tweet.query({reload:$scope.reload},function(response) {
+			  if($scope.reload){
+			  	  $scope.tweets = response;	
+			      $scope.newtweets = null;				  	
+			  }
+			  else
+			  {
+			      $scope.newtweets = response;
+			  }  
+			  $scope.reload =0;
+			  $scope.show_new_tweets = 0;
 		  });
 	  }
-	  gettweets();
-	  var tweetsPromise = $interval(gettweets,1000);
-	  $scope.$on('$destroy', function () { $interval.cancel(tweetsPromise); });
+	  var tweetsPromise = $interval(getnewtweets,10000);
+	  $scope.$on('$destroy', function () { $interval.cancel(tweetsPromise); }); 
 	  
 	  $scope.saveTweet = function(text) {
 		  var tweet = new Tweet({text: text});
 		  tweet.$save(function(){
-			$scope.tweets.unshift(tweet);
+			  if($scope.newtweets)
+			  {
+			  	  $scope.newtweets.unshift(tweet);
+				  $scope.show_new_tweets = 1;
+			  }
+			  else
+			  {
+			  	  $scope.tweets.unshift(tweet);
+			  }
+  		      $scope.reload=1;			
 		  })
+	  }
+	  $scope.showNewTweets = function() {
+		  $scope.show_new_tweets = 1;		  
+		  $scope.reload=1;
 	  }
 }]);
 

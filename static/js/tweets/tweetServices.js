@@ -3,7 +3,7 @@
 
 angular.module('tweetApp.services', ['ngResource'])
   .factory('Tweet', function($resource) {
-	  return $resource('/api/tweets/:id/'); 
+	  return $resource('/api/tweets/:id/',{ reload: '@reload' });
   })
   .factory('User', function($resource) {
 	  return $resource('/api/users/:id/'); 
