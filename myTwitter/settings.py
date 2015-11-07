@@ -22,10 +22,11 @@ SECRET_KEY = 'm%-7-xcoj=0ta*2bsca&8mhy^t7r&w)(!+970yoj+kblw$)hd&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 TEMPLATE_DEBUG = True
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -98,6 +99,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
+STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/login/'
