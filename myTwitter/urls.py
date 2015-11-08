@@ -10,7 +10,7 @@ router.register(r'users', tweet_views.UserViewSet)
 router.register(r'followees', tweet_views.FolloweeViewSet)
 
 urlpatterns = patterns('',
-    #url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^$',views.home,name='home'),
     url(r'^register/$',views.register,name='register'),
     url(r'^login/$',views.login_user,name='login'),
