@@ -62,7 +62,7 @@ ROOT_URLCONF = 'myTwitter.urls'
 
 WSGI_APPLICATION = 'myTwitter.wsgi.application'
 
-
+SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
