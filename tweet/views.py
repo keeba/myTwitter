@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from rest_framework import permissions, viewsets
 from tweet.models import Tweet,Followee
 from tweet.serializers import TweetSerializer,UserSerializer,FolloweeSerializer
-import itertools
-from django.core.cache import cache
 from django.utils import timezone
 
 class TweetViewSet(viewsets.ModelViewSet):
@@ -14,34 +12,41 @@ class TweetViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
     def get_queryset(self):
         """
-        Returns lhe latest 90 tweets of the user and user subscribers if the user is logged in,
-        else returns the latest 90 tweets.
+        Returns lhe last 90 days tweets of the user and user subscribers if the user is logged in,
+        else returns the last 90 days tweets of all users.
         """
-        reload = int(self.request.GET.get('reload'))
-        if self.request.user.is_authenticated():
-            user = self.request.user
-            key = 'user-tweets-'+str(user.id)            
-            followees = user.follower.all().values_list('followee')
-            user_ids = list(itertools.chain(*followees))
-            user_ids.append(user.id)
-            last_tweet_time = cache.get(key)
-            if not reload and last_tweet_time:
-                tweets = Tweet.objects.filter(user_id__in=user_ids,timestamp__gt=last_tweet_time)
-            else:    
-                timenow = timezone.now()
-                cache.set(key,timenow)
-                tweets = Tweet.objects.filter(user_id__in=user_ids,timestamp__lte=timenow)
-            return tweets      
+        reload = 1
+        request = self.request
+        if request.GET.get('reload'):
+            reload = int(self.request.GET['reload'])
+        key = 'user-tweets-'
+        query_params = {}        
+        if request.user.is_authenticated():
+            user = request.user
+            key += str(user.id)
+            key1 = 'user-followees-'+str(user.id)
+            followees = user.get_followee_user_ids()
+            max_id = request.session.get(key1)
+            max_id1 = followees['max_id'] 
+            if not max_id or (max_id and max_id != max_id1):
+                request.session[key1]=max_id1
+                reload = 1                  
+            query_params['user_id__in'] = followees['followee_ids']
         else: 
-            key = 'user-tweets-all'   
-            last_tweet_time = cache.get(key)
-            if not reload and last_tweet_time:
-                tweets=Tweet.objects.filter(timestamp__gt=last_tweet_time)
-            else:    
-                timenow = timezone.now()
-                cache.set(key,timenow)
-                tweets=Tweet.objects.filter(timestamp__lte=timenow)
-        return tweets        
+            key += '-all'   
+        last_tweet_time = request.session.get(key)  
+        if not reload and last_tweet_time:
+            query_params['timestamp__gt'] = last_tweet_time
+        else:    
+            timenow = timezone.now()
+            last_90_days = timenow - timezone.timedelta(days=90)
+            request.session[key]=timenow            
+            query_params['timestamp__gte'] = last_90_days
+            query_params['timestamp__lte'] = timenow
+        tweets = Tweet.objects.filter(**query_params)    
+        if self.request.GET.get('reload'):             
+            return tweets
+        return tweets
         
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
